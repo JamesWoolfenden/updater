@@ -1,0 +1,6 @@
+*.zip
+*.tfstate
+.terraform
+.pytest_cache
+*.backup
+.DS_Store

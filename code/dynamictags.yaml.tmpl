@@ -1,0 +1,18 @@
+---
+metadata:
+ name: "Check that all resources are tagged with the key" 
+ id: "johndeere_AWS_999"
+ category: "GENERAL_SECURITY"
+scope:
+ provider: aws
+definition:
+  and:
+    - or:
+      {% for component in components -%}
+      - cond_type: "attribute"
+        resource_types:
+            - aws_security_group
+        attribute: "tags.component"
+        operator: contains
+        value: "{{ component }}"
+      {% endfor %}
