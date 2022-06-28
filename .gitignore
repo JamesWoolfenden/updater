@@ -4,3 +4,4 @@
 .pytest_cache
 *.backup
 .DS_Store
+.terraform.lock.hcl

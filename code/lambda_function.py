@@ -17,6 +17,5 @@ incident_id="johndeere_AWS_999"
 
 
 def lambda_handler(event, context):
-    policy.make(account_id)
-    # policy.update(dn, du, dh, dbp, incident_id, REGION, account_id)
+    policy.update(dn, du, dh, dbp, incident_id, REGION, account_id)
     return True
