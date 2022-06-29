@@ -17,5 +17,15 @@ incident_id="johndeere_AWS_999"
 
 
 def lambda_handler(event, context):
-    policy.update(dn, du, dh, dbp, incident_id, REGION, account_id)
-    return True
+    if policy.exists(dh, dbp, du, dn, REGION, incident_id):
+        print(f'Updating Policy {incident_id}')
+        result=policy.update(dn, du, dh, dbp, incident_id, REGION, account_id)
+        if not result:
+            print("failed to update record")
+    else:
+        result=policy.insert(dh, dbp, du, dn, REGION, incident_id)
+        if not result:
+            print("failed to insert record")
+    return result
+
+

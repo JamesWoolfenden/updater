@@ -5,7 +5,7 @@ resource "aws_lambda_function" "updater" {
   function_name    = var.name
   handler          = "lambda_function.lambda_handler"
   runtime          = "python3.8"
-  layers           = ["arn:aws:lambda:eu-west-2:680235478471:layer:psycopg2:11"]
+  layers           = [aws_lambda_layer_version.psycopg2.arn]
   filename         = data.archive_file.lambda.output_path
   source_code_hash = filebase64sha256(data.archive_file.lambda.output_path)
   kms_key_arn      = aws_kms_key.s3.arn

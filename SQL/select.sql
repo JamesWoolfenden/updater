@@ -1,0 +1,1 @@
+SELECT count(*) from platform2.incident_configurations where incident_id

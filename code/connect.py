@@ -9,7 +9,7 @@ def getdbtoken(DBHostname, Port, DBUsername, Region):
     return client.generate_db_auth_token(DBHostname=DBHostname, Port=Port, DBUsername=DBUsername, Region=Region)
 
 
-def test_connect(dh, dbp, du, dn, REGION):
+def verify(dh, dbp, du, dn, REGION):
 
     token = getdbtoken(DBHostname=dh, Port=dbp, DBUsername=du, Region=REGION)
 
@@ -21,4 +21,3 @@ def test_connect(dh, dbp, du, dn, REGION):
         print(query_results)
     except Exception as e:
         print("Database connection failed due to {}".format(e))  
-
