@@ -12,7 +12,7 @@ definition:
         resource_types:
             - aws_security_group
         attribute: "tags.component"
-        operator: contains
+        operator: "within" 
         value:
             {% for component in components -%}
             - "{{ component }}"
