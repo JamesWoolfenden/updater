@@ -1,9 +1,6 @@
-import json
 import boto3
 import os
-import logging as log
 import policy
-from io import BytesIO
 
 s3 = boto3.resource('s3')
 

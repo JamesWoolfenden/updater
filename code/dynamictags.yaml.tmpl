@@ -8,11 +8,12 @@ scope:
 definition:
   and:
     - or:
-      {% for component in components -%}
       - cond_type: "attribute"
         resource_types:
             - aws_security_group
         attribute: "tags.component"
         operator: contains
-        value: "{{ component }}"
-      {% endfor %}
+        value:
+            {% for component in components -%}
+            - "{{ component }}"
+            {% endfor %}
