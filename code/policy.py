@@ -4,7 +4,6 @@ import logging
 import connect
 import psycopg2
 import boto3
-import yaml
 import json
 import os
 
@@ -18,18 +17,15 @@ def update(dn, du, dh, dbp, incident_id, REGION, account_id):
         logging.warn("No updates were made to the database")
         return
     logging.info(f"Following policy will be added: {policy}")
-    token = connect.getdbtoken(
-        DBHostname=dh, Port=dbp, DBUsername=du, Region=REGION)
+    token = connect.getdbtoken(DBHostname=dh, Port=dbp, DBUsername=du, Region=REGION)
 
     # Connect to an existing database
-    conn = psycopg2.connect(host=dh, port=dbp, database=dn,
-                            user=du, password=token, sslrootcert="global-bundle.cer")
+    conn = psycopg2.connect(host=dh, port=dbp, database=dn, user=du, password=token, sslrootcert="global-bundle.cer")
 
     # Open a cursor to perform database operations
     cur = conn.cursor()
 
-    cur.execute(
-        f"UPDATE {dn}.incident_configurations SET code='{json.dumps(policy)}' WHERE incident_id='{incident_id}';")
+    cur.execute(f"UPDATE {dn}.incident_configurations SET code='{json.dumps(policy)}' WHERE incident_id='{incident_id}';")
 
     print(cur.statusmessage)
 
@@ -50,10 +46,9 @@ def make(account_id):
         logging.warn("No components were detected.")
         return
     file_loader = FileSystemLoader('templates')
-    env = Environment(loader=FileSystemLoader(
-        os.path.abspath(os.path.dirname(__file__))))
+    env = Environment(loader=FileSystemLoader(os.path.abspath(os.path.dirname(__file__))))
     template = env.get_template('/dynamictags.yaml.tmpl')
-    
+
     output = template.render(components=components)
     return output
 
@@ -77,7 +72,7 @@ def get_tags(account_id):
             if tags_json.get('components'):
                 components = tags_json.get('components')
                 if not isinstance(components, list):
-                    components = None         
+                    components = None
         else:
             components = None
     except JSONDecodeError as e:
