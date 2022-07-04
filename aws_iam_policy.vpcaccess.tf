@@ -30,7 +30,3 @@ resource "aws_iam_role_policy_attachment" "iamdb-attach" {
   policy_arn = var.dbiam_arn
 }
 
-variable "dbiam_arn" {
-  type        = string
-  description = "(optional) describe your variable"
-}
