@@ -9,6 +9,7 @@ envvars = {
   dh         = "platform2.cfkva6djgghs.eu-west-2.rds.amazonaws.com"
   dbp        = "5432"
   account_id = "680235478471"
+  incident_id= "johndeere_AWS_999"
 }
 externalrole = "arn:aws:iam::619572639823:root"
 #this is a db iam role policy 
