@@ -33,7 +33,3 @@ variable "externalrole" {
   description = "External role to write new tag file"
 }
 
-variable "dbiam_arn" {
-  type        = string
-  description = "(optional) describe your variable"
-}

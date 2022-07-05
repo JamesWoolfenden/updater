@@ -2,7 +2,7 @@
 
 Check for tags on aws_security_group resources, values for tag.component form s3 bucket.
 
-This application genertes new bridgecrew policies when a customer add a new tag file (called components)
+This application generates new bridgecrew policies when a customer add a new tag file (called components)
 to an s3 bucket tht they will have write access to (not public.)
 
 If the customer supplies a role that can write to bucket, we'll attach that role to our bucket.

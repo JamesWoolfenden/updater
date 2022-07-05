@@ -10,21 +10,20 @@ from jinja2 import Environment, FileSystemLoader
 from io import BytesIO
 
 
-def update(dn, du, dh, dbp, incident_id, region, account_id):
+def update(dn, du, dh, dbp, incident_id, region, account_id, password, schema):
     policy = make(account_id, incident_id)
     if not policy:
         print("No updates were made to the database")
         return False
     print(f"Following policy will be updated: {policy}")
-    token = connect.getdbtoken(DBHostname=dh, Port=dbp, DBUsername=du, Region=region)
-
+    
     # Connect to an existing database
-    conn = psycopg2.connect(host=dh, port=dbp, database=dn, user=du, password=token, sslrootcert="global-bundle.cer")
+    conn = psycopg2.connect(host=dh, port=dbp, database=dn, user=du, password=password, sslrootcert="global-bundle.cer", options=f'-c search_path={schema}')
 
     # Open a cursor to perform database operations
     cur = conn.cursor()
 
-    cur.execute(f"UPDATE {dn}.incident_configurations SET code='{json.dumps(policy)}' WHERE incident_id='{incident_id}';")
+    cur.execute(f"UPDATE incident_configurations SET code='{json.dumps(policy)}' WHERE incident_id='{incident_id}';")
 
     print(f"status:{cur.statusmessage}")
 
@@ -77,14 +76,13 @@ def get_tags(account_id):
         return None
 
 
-def exists(dh, dbp, du, dn, region, incident_id):
-    token = connect.getdbtoken(DBHostname=dh, Port=dbp, DBUsername=du, Region=region)
+def exists(dh, dbp, du, dn, region, incident_id, password, schema):
 
     try:
         conn = psycopg2.connect(host=dh, port=dbp, database=dn, user=du,
-                                password=token, sslrootcert="global-bundle.cer")
+                                password=password, sslrootcert="global-bundle.cer", options=f'-c search_path={schema}')
         cur = conn.cursor()
-        cur.execute(f"SELECT count(*) from {dn}.incident_configurations where incident_id='{incident_id}';")
+        cur.execute(f"SELECT count(*) from incident_configurations where incident_id='{incident_id}';")
         result = cur.fetchone()[0]
         return bool(result)
     except Exception as e:
@@ -92,15 +90,14 @@ def exists(dh, dbp, du, dn, region, incident_id):
         return False
 
 
-def insert(dh, dbp, du, dn, region, incident_id):
-    token = connect.getdbtoken(DBHostname=dh, Port=dbp, DBUsername=du, Region=region)
+def insert(dh, dbp, du, dn, region, incident_id, password, schema, title):
     customer=incident_id.split("_")[0]
     
     try:
-        conn = psycopg2.connect(host=dh, port=dbp, database=dn, user=du,
-                                password=token, sslrootcert="global-bundle.cer")
+        conn = psycopg2.connect(host=dh, port=dbp, database=dn, user=du, password=password, sslrootcert="global-bundle.cer", options=f'-c search_path={schema}')
         cur = conn.cursor()
-        query=f"INSERT INTO {dn}.incident_configurations (incident_id, incident_type, category, title, guideline, severity, lacework_violation_id, prowler_violation_id, checkov_check_id, remediation_ids, condition_query, is_custom, customer_name, resource_types, provider, created_by, code, constructive_title, descriptive_title, pc_policy_id, frameworks, pc_severity, source_incident_id, additional_pc_policy_ids) VALUES ('{incident_id}', 'Violation', 'General', 'Ensure Security group has correct tags', 'url to guideline', 'MEDIUM', NULL, NULL, '{incident_id}','{{}}', NULL, true, '{customer}', '{{aws_security_group}}', 'AWS', NULL, NULL, 'constructive', 'descriptive', NULL, '{{Terraform}}', NULL, NULL, NULL);"
+        
+        query=f"INSERT INTO incident_configurations (incident_id, incident_type, category, title, guideline, severity, lacework_violation_id, prowler_violation_id, checkov_check_id, remediation_ids, condition_query, is_custom, customer_name, resource_types, provider, created_by, code, constructive_title, descriptive_title, pc_policy_id, frameworks, pc_severity, source_incident_id, additional_pc_policy_ids) VALUES ('{incident_id}', 'Violation', 'General', 'Ensure Security group has correct tags', 'url to guideline', 'MEDIUM', NULL, NULL, '{incident_id}','{{}}', NULL, true, '{customer}', '{{aws_security_group}}', 'AWS', NULL, NULL, '{title}', 'descriptive', NULL, '{{Terraform}}', NULL, NULL, NULL);"
         cur.execute(query)
         
         conn.commit()

@@ -17,9 +17,9 @@ data "aws_iam_policy_document" "basic" {
       type        = "AWS"
       identifiers = [var.externalrole]
     }
-    actions =  ["s3:GetObject",
-                "s3:PutObject",
-                "s3:PutObjectAcl"]
+    actions = ["s3:GetObject",
+      "s3:PutObject",
+    "s3:PutObjectAcl"]
     resources = ["arn:aws:s3:::${local.full_s3_bucket_name}/*"]
   }
 
