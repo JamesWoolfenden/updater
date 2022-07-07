@@ -25,12 +25,4 @@ resource "aws_iam_role_policy_attachment" "vpc-attach" {
   policy_arn = aws_iam_policy.vpcaccess.arn
 }
 
-resource "aws_iam_role_policy_attachment" "iamdb-attach" {
-  role       = aws_iam_role.reads3.name
-  policy_arn = var.dbiam_arn
-}
 
-variable "dbiam_arn" {
-  type        = string
-  description = "(optional) describe your variable"
-}

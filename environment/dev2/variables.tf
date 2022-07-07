@@ -32,4 +32,3 @@ variable "externalrole" {
   type        = string
   description = "External role to write new tag file"
 }
-

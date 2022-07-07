@@ -5,3 +5,4 @@
 *.backup
 .DS_Store
 .terraform.lock.hcl
+python/

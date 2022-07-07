@@ -9,12 +9,11 @@ def getdbtoken(DBHostname, Port, DBUsername, Region):
     return client.generate_db_auth_token(DBHostname=DBHostname, Port=Port, DBUsername=DBUsername, Region=Region)
 
 
-def verify(dh, dbp, du, dn, REGION):
+def verify(dh, dbp, du, dn, password):
 
-    token = getdbtoken(DBHostname=dh, Port=dbp, DBUsername=du, Region=REGION)
-
+    schema="platform-anton"
     try:
-        conn = psycopg2.connect(host=dh, port=dbp, database=dn, user=du, password=token, sslrootcert="global-bundle.cer")
+        conn = psycopg2.connect(host=dh, port=dbp, database=dn, user=du, password=password, sslrootcert="global-bundle.cer", options=f'-c search_path={schema}')
         cur = conn.cursor()
         cur.execute("""SELECT now()""")
         query_results = cur.fetchall()

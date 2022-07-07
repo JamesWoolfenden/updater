@@ -68,4 +68,3 @@ def get(secret_id, region):
         else:
             decoded_binary_secret = base64.b64decode(get_secret_value_response['SecretBinary'])
             return decoded_binary_secret
-

@@ -10,7 +10,6 @@ from jinja2 import Environment, FileSystemLoader
 from io import BytesIO
 
 
-
 def condition_query(policy):
     configuration = yaml.safe_load(policy)
     condition_query= configuration.get('definition')
@@ -122,4 +121,3 @@ def insert(dh, dbp, du, dn, region, incident_id, password, schema, title, accoun
     except Exception as e:
         print("Database connection failed due to {}".format(e))
         return False
-

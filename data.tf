@@ -30,7 +30,7 @@ data "aws_iam_policy_document" "basic" {
       type        = "AWS"
       identifiers = [aws_lambda_function.updater.role]
     }
-    actions   = ["s3:*"]
+    actions   = ["s3:GetObject"]
     resources = ["arn:aws:s3:::${local.full_s3_bucket_name}/*"]
   }
 
