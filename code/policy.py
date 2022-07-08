@@ -10,6 +10,12 @@ from jinja2 import Environment, FileSystemLoader
 from io import BytesIO
 
 
+
+def condition_query(policy):
+    configuration = yaml.safe_load(policy)
+    condition_query=(configuration.get('definition'))
+    return condition_query
+
 def update(dn, du, dh, dbp, incident_id, region, account_id, password, schema):
     policy = make(account_id, incident_id)
     if not policy:
@@ -22,8 +28,9 @@ def update(dn, du, dh, dbp, incident_id, region, account_id, password, schema):
 
     # Open a cursor to perform database operations
     cur = conn.cursor()
-
-    cur.execute(f"UPDATE incident_configurations SET code='{json.dumps(policy)}' WHERE incident_id='{incident_id}';")
+    conditionQuery=condition_query(policy)
+    
+    cur.execute(f"UPDATE incident_configurations SET code='{json.dumps(policy)}', condition_query='{json.dumps(conditionQuery)}' WHERE incident_id='{incident_id}';")
 
     print(f"status:{cur.statusmessage}")
 
