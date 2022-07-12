@@ -26,7 +26,7 @@ def lambda_handler(event, context):
 
     if not exists:
         print(f'Inserting Placeholder Policy {incident_id}')
-        result=policy.insert(dh, dbp, du, dn, region, incident_id, password, schema, title)
+        result=policy.insert(dh, dbp, du, dn, region, incident_id, password, schema, title, account_id)
         if not result:
             print("failed to insert placeholder  record")
         

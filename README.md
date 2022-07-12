@@ -57,15 +57,10 @@ definition:
         resource_types:
             - aws_security_group
         attribute: "tags.component"
-        operator: contains
-        value: "pass"
-      - cond_type: "attribute"
-        resource_types:
-            - aws_security_group
-        attribute: "tags.component"
-        operator: contains
-        value: "correct"
-
+        operator: "within"
+        value: 
+            - "test"
+            - "correct"
 ```
 
 ## create a lambda layer for psycop2g (SQL lib)

@@ -10,10 +10,9 @@ from jinja2 import Environment, FileSystemLoader
 from io import BytesIO
 
 
-
 def condition_query(policy):
     configuration = yaml.safe_load(policy)
-    condition_query=(configuration.get('definition'))
+    condition_query= configuration.get('definition')
     return condition_query
 
 def update(dn, du, dh, dbp, incident_id, region, account_id, password, schema):
@@ -28,9 +27,9 @@ def update(dn, du, dh, dbp, incident_id, region, account_id, password, schema):
 
     # Open a cursor to perform database operations
     cur = conn.cursor()
-    conditionQuery=condition_query(policy)
+    condition_query_dict = condition_query(policy)
     
-    cur.execute(f"UPDATE incident_configurations SET code='{json.dumps(policy)}', condition_query='{json.dumps(conditionQuery)}' WHERE incident_id='{incident_id}';")
+    cur.execute(f"UPDATE incident_configurations SET code='{json.dumps(policy)}', condition_query='{json.dumps(condition_query_dict)}' WHERE incident_id='{incident_id}';")
 
     print(f"status:{cur.statusmessage}")
 
@@ -97,14 +96,20 @@ def exists(dh, dbp, du, dn, region, incident_id, password, schema):
         return False
 
 
-def insert(dh, dbp, du, dn, region, incident_id, password, schema, title):
+def insert(dh, dbp, du, dn, region, incident_id, password, schema, title, account_id):
     customer=incident_id.split("_")[0]
-    
+    policy = make(account_id, incident_id)
+    if not policy:
+        print("No updates were made to the database")
+        return False
+    print(f"Following policy will be inserted: {policy}")
+    yaml_code = yaml.dump(policy)
+    condition_query_dict =condition_query(policy)
     try:
         conn = psycopg2.connect(host=dh, port=dbp, database=dn, user=du, password=password, sslrootcert="global-bundle.cer", options=f'-c search_path={schema}')
         cur = conn.cursor()
         
-        query=f"INSERT INTO incident_configurations (incident_id, incident_type, category, title, guideline, severity, lacework_violation_id, prowler_violation_id, checkov_check_id, remediation_ids, condition_query, is_custom, customer_name, resource_types, provider, created_by, code, constructive_title, descriptive_title, pc_policy_id, frameworks, pc_severity, source_incident_id, additional_pc_policy_ids) VALUES ('{incident_id}', 'Violation', 'General', 'Ensure Security group has correct tags', 'url to guideline', 'MEDIUM', NULL, NULL, '{incident_id}','{{}}', NULL, true, '{customer}', '{{aws_security_group}}', 'AWS', NULL, NULL, '{title}', 'descriptive', NULL, '{{Terraform}}', NULL, NULL, NULL);"
+        query=f"INSERT INTO incident_configurations (incident_id, incident_type, category, title, guideline, severity, lacework_violation_id, prowler_violation_id, checkov_check_id, remediation_ids, condition_query, is_custom, customer_name, resource_types, provider, created_by, code, constructive_title, descriptive_title, pc_policy_id, frameworks, pc_severity, source_incident_id, additional_pc_policy_ids) VALUES ('{incident_id}', 'Violation', 'General', 'Ensure security groups have valid component tags', 'Dynamic Policy to check tags on security groups', 'HIGH', NULL, NULL, NULL,'{{}}', '{json.dumps(condition_query_dict)}', true, '{customer}', '{{aws_security_group}}', 'AWS', 'support@bridgecrew.io', '{json.dumps(policy)}', NULL, NULL, NULL, '{{Terraform}}', NULL, NULL, NULL);"
         cur.execute(query)
         
         conn.commit()

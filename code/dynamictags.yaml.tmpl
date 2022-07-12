@@ -1,20 +1,18 @@
 ---
 metadata:
- name: "Check that all resources are tagged with the key"
- guidelines: "Dynamic Policy to check tags on security groups" 
- category: "general"
- severity: "high"
+    name: "Ensure security groups have valid component tags" 
+    guidelines: "Dynamic Policy to check tags on security groups"
+    severity: "high"
+    category: "general"
 scope:
- provider: aws
+    provider: "aws"
 definition:
-  and:
-    - or:
-      - cond_type: "attribute"
-        resource_types:
-            - aws_security_group
-        attribute: "tags.component"
-        operator: contains
-        value:
+    cond_type: "attribute"
+    resource_types:
+        - "aws_security_group"
+    attribute: "tags.component"
+    operator: "within" 
+    value:
         {% for component in components -%}
-            - "{{ component }}"
+        - "{{ component }}"
         {% endfor %}
