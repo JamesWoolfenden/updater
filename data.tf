@@ -15,7 +15,7 @@ data "aws_iam_policy_document" "basic" {
     effect = "Allow"
     principals {
       type        = "AWS"
-      identifiers = [var.externalrole]
+      identifiers = var.externalroles
     }
     actions = ["s3:GetObject",
       "s3:PutObject",

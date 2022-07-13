@@ -1,5 +1,4 @@
 name               = "reads3"
-route_table_id     = "rtb-09b1a4a1ae5f60899"
 subnet_ids         = ["subnet-039f2619628623094", "subnet-023834f65ab31e28f"]
 security_group_ids = ["sg-0fc2ff0f239eed681"]
 vpc_id             = "vpc-03c4ed698fcdf2fef"
@@ -14,7 +13,10 @@ envvars = {
   schema      = "platform-anton"
   secret_id   = "aurora-pg-secret/bc-aurora-rdsv2-secret-rotation"
 }
-externalrole = "arn:aws:iam::680235478471:root"
+externalroles = [
+  "arn:aws:iam::944928700026:role/system-roles/Section31/bridgecrew-custom-policy-updater/bridgecrew-custom-policy-updater-lambda-execution",
+  "arn:aws:iam::944928700026:role/ADFS-GSEC-ISG"]
+
 
 
 

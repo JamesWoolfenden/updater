@@ -3,11 +3,6 @@ variable "name" {
   description = "The name of the lambda"
 }
 
-variable "route_table_id" {
-  type        = string
-  description = "Your main route table id"
-}
-
 variable "vpc_id" {
   type        = string
   description = "The VPC ID"
@@ -28,7 +23,7 @@ variable "envvars" {
   description = "Your lambdas env vars"
 }
 
-variable "externalrole" {
-  type        = string
+variable "externalroles" {
+  type        = list(string)
   description = "External role to write new tag file"
 }
