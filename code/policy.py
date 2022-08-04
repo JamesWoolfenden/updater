@@ -5,6 +5,7 @@ import boto3
 import yaml
 import json
 import os
+import datetime
 
 from jinja2 import Environment, FileSystemLoader
 from io import BytesIO
@@ -53,7 +54,7 @@ def make(account_id, incident_id):
     env = Environment(loader=FileSystemLoader(os.path.abspath(os.path.dirname(__file__))))
     template = env.get_template('/dynamictags.yaml.tmpl')
 
-    output = template.render(components=components, incident_id=incident_id)
+    output = template.render(components=components, incident_id=incident_id, timestamp=get_utc_timestamp_comment())
     return output
 
 
@@ -121,3 +122,10 @@ def insert(dh, dbp, du, dn, region, incident_id, password, schema, title, accoun
     except Exception as e:
         print("Database connection failed due to {}".format(e))
         return False
+
+
+def get_utc_timestamp_comment():
+    format1 = '%Y-%m-%d %H:%M:%S.%f'
+    format2 = '%a, %b %d, %Y %I:%M:%S %p'
+    utc_time = datetime.datetime.utcnow()
+    return f'# UTC: {utc_time.strftime(format1)} ({utc_time.strftime(format2)})'
