@@ -8,16 +8,16 @@ to an s3 bucket tht they will have write access to (not public.)
 If the customer supplies a role that can write to bucket, we'll attach that role to our bucket.
 The upload will trigger a lambda to make a large YML policy based on it and write it to the policies db.
 
-The folder terraform contains the iac that creates all the infra required although it is currently configured for a test environment:
-<./tag-updater/terraform/tags.auto.tfvars>
+The repo root contains the iac that creates all the infra required although it is currently configured for a test environment:
+`environment/*/` (per-environment tfvars)
 
 ## creates an rds db
 
-- check
-  
+Postgres (RDS). The schema lives in `SQL/tables` and `SQL/types`; the logins are in `SQL/login`.
+
 ## connect to it
 
-- check
+`code/connect.py` connects over TLS using `code/global-bundle.cer`. The password comes from Secrets Manager (`code/secret.py`) or an RDS IAM auth token.
 
 ## connect to iam/ssl instance
 
@@ -29,12 +29,12 @@ GRANT rds_iam to DBUSER
 
 ## write a record in it
 
-- check
-  
+`policy.insert` adds a row to `incident_configurations` (parameterised query) when none exists for the `incident_id`.
+
 ## update a record in it
 
-- check
-  
+`policy.update` re-renders the policy from `components.json` and updates `code` and `condition_query` for the `incident_id`.
+
 ## construct a policy record based on data read in from s3
 
 <https://docs.aws.amazon.com/lambda/latest/dg/with-s3-example.html>
@@ -69,5 +69,5 @@ definition:
 
 ## Build a new layer zip
 
-run: ./terraform/layer/makezip.sh
+run: ./layer/makezip.sh
 

@@ -4,7 +4,7 @@ resource "aws_lambda_function" "updater" {
   role             = aws_iam_role.reads3.arn
   function_name    = var.name
   handler          = "lambda_function.lambda_handler"
-  runtime          = "python3.8"
+  runtime          = "python3.12"
   layers           = [aws_lambda_layer_version.psycopg2.arn]
   filename         = data.archive_file.lambda.output_path
   source_code_hash = filebase64sha256(data.archive_file.lambda.output_path)

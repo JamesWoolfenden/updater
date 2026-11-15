@@ -30,7 +30,10 @@ def update(dn, du, dh, dbp, incident_id, region, account_id, password, schema):
     cur = conn.cursor()
     condition_query_dict = condition_query(policy)
     
-    cur.execute(f"UPDATE incident_configurations SET code='{json.dumps(policy)}', condition_query='{json.dumps(condition_query_dict)}' WHERE incident_id='{incident_id}';")
+    cur.execute(
+        "UPDATE incident_configurations SET code=%s, condition_query=%s WHERE incident_id=%s;",
+        (json.dumps(policy), json.dumps(condition_query_dict), incident_id),
+    )
 
     print(f"status:{cur.statusmessage}")
 
@@ -89,7 +92,7 @@ def exists(dh, dbp, du, dn, region, incident_id, password, schema):
         conn = psycopg2.connect(host=dh, port=dbp, database=dn, user=du,
                                 password=password, sslrootcert="global-bundle.cer", options=f'-c search_path={schema}')
         cur = conn.cursor()
-        cur.execute(f"SELECT count(*) from incident_configurations where incident_id='{incident_id}';")
+        cur.execute("SELECT count(*) from incident_configurations where incident_id=%s;", (incident_id,))
         result = cur.fetchone()[0]
         return bool(result)
     except Exception as e:
@@ -110,8 +113,9 @@ def insert(dh, dbp, du, dn, region, incident_id, password, schema, title, accoun
         conn = psycopg2.connect(host=dh, port=dbp, database=dn, user=du, password=password, sslrootcert="global-bundle.cer", options=f'-c search_path={schema}')
         cur = conn.cursor()
         
-        query=f"INSERT INTO incident_configurations (incident_id, incident_type, category, title, guideline, severity, lacework_violation_id, prowler_violation_id, checkov_check_id, remediation_ids, condition_query, is_custom, customer_name, resource_types, provider, created_by, code, constructive_title, descriptive_title, pc_policy_id, frameworks, pc_severity, source_incident_id, additional_pc_policy_ids) VALUES ('{incident_id}', 'Violation', 'General', 'Ensure security groups have valid component tags', 'Dynamic Policy to check tags on security groups', 'HIGH', NULL, NULL, NULL,'{{}}', '{json.dumps(condition_query_dict)}', true, '{customer}', '{{aws_security_group}}', 'AWS', 'support@bridgecrew.io', '{json.dumps(policy)}', NULL, NULL, NULL, '{{Terraform}}', NULL, NULL, NULL);"
-        cur.execute(query)
+        query = ("INSERT INTO incident_configurations (incident_id, incident_type, category, title, guideline, severity, lacework_violation_id, prowler_violation_id, checkov_check_id, remediation_ids, condition_query, is_custom, customer_name, resource_types, provider, created_by, code, constructive_title, descriptive_title, pc_policy_id, frameworks, pc_severity, source_incident_id, additional_pc_policy_ids) "
+                 "VALUES (%s, 'Violation', 'General', 'Ensure security groups have valid component tags', 'Dynamic Policy to check tags on security groups', 'HIGH', NULL, NULL, NULL, '{}', %s, true, %s, '{aws_security_group}', 'AWS', 'support@bridgecrew.io', %s, NULL, NULL, NULL, '{Terraform}', NULL, NULL, NULL);")
+        cur.execute(query, (incident_id, json.dumps(condition_query_dict), customer, json.dumps(policy)))
         
         conn.commit()
         # Close communication with the database
@@ -127,5 +131,5 @@ def insert(dh, dbp, du, dn, region, incident_id, password, schema, title, accoun
 def get_utc_timestamp_comment():
     format1 = '%Y-%m-%d %H:%M:%S.%f'
     format2 = '%a, %b %d, %Y %I:%M:%S %p'
-    utc_time = datetime.datetime.utcnow()
+    utc_time = datetime.datetime.now(datetime.timezone.utc)
     return f'# UTC: {utc_time.strftime(format1)} ({utc_time.strftime(format2)})'
